@@ -30,4 +30,3 @@ for i in range(len(lines)):
                     ans += k
                     break
 
-print(ans)
