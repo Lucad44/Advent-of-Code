@@ -24,27 +24,37 @@ for i, line in enumerate(lines):
             if j < len(line) - 1 and line[j + 1].isdigit():
                 coords.append(j + 1)
 
-            general_flag = True
-            f1, f2 = True, True
-            for l in range(max(0, j - 1), min(len(line), j + 2)):
-                if f1 and i and lines[i - 1][l].isdigit():
-                    coords.append(l)
-                    f1 = False
-                elif not f1 and i and lines[i - 1][l].isdigit() and not lines[i - 1][l - 1].isdigit():
-                    general_flag = False
-                    break
-                if f2 and i < len(lines) -1 and lines[i + 1][l].isdigit():
-                    coords.append(l)
-                    f2 = False
-                elif not f2 and i < len(lines) - 1 and lines[i + 1][l].isdigit() and not lines[i + 1][l - 1].isdigit():
-                    general_flag = False
-                    break
+            up_bounds, down_bounds = True, True
+            flags = [True, True]
+            index = 0
+            up, down = max(0, j - 1), max(0, j - 1)
+            end = min(len(line), j + 2)
+            while up < end or down < end:
+                if (up >= end):
+                    up_bounds = False
+                if (down >= end):
+                    down_bounds = False
+                if up_bounds and True in flags and i and lines[i - 1][up].isdigit():
+                    coords.append(up)
+                    flags[index] = False
+                    index += 1
+                    while up < len(line) and lines[i - 1][up].isdigit():
+                        up += 1
+                        continue
+                if down_bounds and True in flags and i < len(lines) - 1 and lines[i + 1][down].isdigit():
+                    coords.append(down)
+                    flags[index] = False
+                    index += 1
+                    while down < len(line) and lines[i + 1][down].isdigit():
+                        down += 1
+                        continue
+                up += 1
+                down += 1
 
-        if len(coords) != 2 or not general_flag:
+        if len(coords) != 2:
             continue
         
-        print(i, coords)
-
+        print_n = []
         prod = 1
         for l, d in enumerate(dict_list):
             if l < i - 1:
@@ -54,7 +64,10 @@ for i, line in enumerate(lines):
             for k, v in d.items():
                 for t in range(0, len(v), 2):
                     if (v[t] <= coords[0] <= v[t + 1]) or (v[t] <= coords[1] <= v[t + 1]):
+                        print_n.append(k)
                         prod *= k
         ans += prod
+        print(i, print_n[0], "*", print_n[1], "prod: ", prod)
+        print("ans: ", ans)
 
 print(ans)
