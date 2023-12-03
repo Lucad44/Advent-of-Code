@@ -19,12 +19,14 @@ for i in range(len(lines)):
         num_dict[num].extend([start, end])
 
     for k, v in num_dict.items():
-        if (v[0] and is_symbol(lines[i][v[0] - 1])) or (v[1] < len(lines[i]) - 1 and is_symbol(lines[i][v[1] + 1])):
-            ans += k
-            continue
         for t in range(0, len(v), 2):
+            if (v[0] and is_symbol(lines[i][v[0] - 1])) or (v[1] < len(lines[i]) - 1 and is_symbol(lines[i][v[1] + 1])):
+                print(k, v[t], v[t + 1])
+                ans += k
+                continue
             for l in range(max(0, v[t] - 1), min(len(lines[i]), v[t + 1] + 2)):
                 if ((i and is_symbol(lines[i - 1][l])) or (i < len(lines) - 1 and is_symbol(lines[i + 1][l]))):
+                    print(k, v[t], v[t + 1])
                     ans += k
                     break
 
