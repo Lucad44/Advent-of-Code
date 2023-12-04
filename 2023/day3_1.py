@@ -6,7 +6,7 @@ def is_symbol(c):
         return True
     return False
 
-with open("input.txt", "r") as f:
+with open("2023/input.txt", "r") as f:
     lines = [line.rstrip() for line in f]
 
 ans = 0
