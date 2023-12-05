@@ -3,8 +3,10 @@
 #include <string>
 #include <regex>
 #include <unordered_map>
+#include <chrono>
 
 int main(int argc, char *argv[]) {
+    auto start = std::chrono::high_resolution_clock::now();
     std::ifstream f("input.txt");
     std::string line;
     std::regex num_regex("\\d+");
@@ -63,5 +65,9 @@ int main(int argc, char *argv[]) {
     }
     std::cout << ans;
     f.close();
+    auto stop = std::chrono::high_resolution_clock::now();
+
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds> (stop - start);
+    std::cout << "\nExecution time: " << duration.count() << " milliseconds" << std::endl;
     return 0;
 }
