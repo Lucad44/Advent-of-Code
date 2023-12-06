@@ -9,7 +9,7 @@ light_to_temperature = []
 temperature_to_humidity = []
 humidity_to_location = []
 
-with open("2023/input.txt", "r") as f:
+with open("input5.txt", "r") as f:
     seeds = [int(x) for x in re.findall(r'\d+', f.readline())]
     f.readline()
     current_map = None
@@ -37,16 +37,18 @@ def associate(original, seed, it):
 
 ans = float('inf')
 
-for seed in seeds:
-    curr_seed = associate(seed, seed, seed_to_soil)
-    curr_seed = associate(seed, curr_seed, soil_to_fertilizer)
-    curr_seed = associate(seed, curr_seed, fertilizer_to_water)
-    curr_seed = associate(seed, curr_seed, water_to_light)
-    curr_seed = associate(seed, curr_seed, light_to_temperature)
-    curr_seed = associate(seed, curr_seed, temperature_to_humidity)
-    curr_seed = associate(seed, curr_seed, humidity_to_location)
-    ans = min(ans, curr_seed)
-print(ans)
+for i in range(1, len(seeds), 2):
+    for j in range(seeds[i - 1], seeds[i - 1] + seeds[i]):
+        seed = j
+        curr_seed = associate(seed, seed, seed_to_soil)
+        curr_seed = associate(seed, curr_seed, soil_to_fertilizer)
+        curr_seed = associate(seed, curr_seed, fertilizer_to_water)
+        curr_seed = associate(seed, curr_seed, water_to_light)
+        curr_seed = associate(seed, curr_seed, light_to_temperature)
+        curr_seed = associate(seed, curr_seed, temperature_to_humidity)
+        curr_seed = associate(seed, curr_seed, humidity_to_location)
+        ans = min(ans, curr_seed)
+    print(ans)
 
 
 print("final ans: ", ans)
