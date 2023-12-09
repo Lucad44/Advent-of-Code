@@ -16,7 +16,6 @@ int main(int argc, char *argv[]) {
         i++;
         if (i == 2)
             continue;
-        std::istringstream iss(line);
         if (i == 1) {
             instructions = line;
             continue;
@@ -47,10 +46,6 @@ int main(int argc, char *argv[]) {
             }
         }
     }
-    long res = 1;
-    for (long x: ans) {
-        res = std::lcm(res, x);
-    }
-    std::cout << "res: " << res << std::endl;
+    std::cout << "ans: " << std::reduce(ans.begin(), ans.end(), 1L, [](long a, long b) {return std::lcm(a, b);}) << std::endl;
     return 0;
 }
