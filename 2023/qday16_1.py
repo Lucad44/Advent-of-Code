@@ -1,13 +1,18 @@
+import sys
+
+
 with open("2023/input.txt", "r") as f:
     lines = f.read().splitlines()
 
 m, n = len(lines), len(lines[0])
-energised = [[False] * n] * m
+energised = [set() for _ in range(m) for _ in range(n)]
+energised = [energised[i * n:(i + 1) * n] for i in range(m)]
+sys.setrecursionlimit(10**6)
 
 def energise(i, j, dir):
-    if i < 0 or i >= m or j < 0 or j >= n:
+    if i < 0 or i >= m or j < 0 or j >= n or dir in energised[i][j]:
         return
-    energised[i][j] = True
+    energised[i][j].add(dir)
     match lines[i][j]:
         case '.':
             if dir == "left":
@@ -20,22 +25,22 @@ def energise(i, j, dir):
                 energise(i + 1, j, "down")
         case '/':
             if dir == "left":
-                energise(i - 1, j, "up")  
-            elif dir == "right":
-                energise(i + 1, j, "down")
-            elif dir == "up":
-                energise(i, j - 1, "left")
-            elif dir == "down":
-                energise(i, j + 1, "right")
-        case '\\':
-            if dir == "left":
-                energise(i + 1, j, "down")
+                energise(i + 1, j, "down")  
             elif dir == "right":
                 energise(i - 1, j, "up")
             elif dir == "up":
                 energise(i, j + 1, "right")
             elif dir == "down":
                 energise(i, j - 1, "left")
+        case '\\':
+            if dir == "left":
+                energise(i - 1, j, "up")
+            elif dir == "right":
+                energise(i + 1, j, "down")
+            elif dir == "up":
+                energise(i, j - 1, "left")
+            elif dir == "down":
+                energise(i, j + 1, "right")
         case '|':
             if dir == "left" or dir == "right":
                 energise(i - 1, j, "up")
@@ -52,10 +57,13 @@ def energise(i, j, dir):
             elif dir == "up" or dir == "down":
                 energise(i, j - 1, "left")
                 energise(i, j + 1, "right")
+                
 
 energise(0, 0, "right")
 ans = 0
 for line in energised:
     print(line)
-    ans += line.count(True)
+    for x in line:
+        if x:
+            ans += 1
 print(ans)
