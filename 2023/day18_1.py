@@ -7,6 +7,7 @@ with open("2023/input.txt", "r") as f:
 
 last_pos = [0, 0]
 vertices = [last_pos.copy()]
+perimeter = 0
 
 for d, x in lines:
     match d:
@@ -18,16 +19,13 @@ for d, x in lines:
             last_pos[0] -= x
         case 'D':
             last_pos[0] += x
-    last_pos[0] *= -1
+    perimeter += x
     vertices.append(last_pos.copy())
-    last_pos[0] *= -1
-    
-for v in vertices:
-    print(v)
 
 ans = vertices[-1][0] * vertices[0][1] - vertices[-1][1] * vertices[0][0]
 for i in range(1, len(vertices)):
     ans += vertices[i - 1][0] * vertices[i][1] - vertices[i - 1][1] * vertices[i][0]
 
-ans //= 2
+ans  = abs(ans) // 2
+ans += perimeter // 2 + 1
 print(ans)
