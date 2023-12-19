@@ -6,8 +6,6 @@ with open("2023/input.txt", "r") as f:
 
 m, n = len(lines), len(lines[0])
 sys.setrecursionlimit(10**4)
-energised = [set() for _ in range(m) for _ in range(n)]
-energised = [energised[i * n:(i + 1) * n] for i in range(m)]
 
 def energise(i, j, dir):
     if i < 0 or i >= m or j < 0 or j >= n or dir in energised[i][j]:
@@ -57,5 +55,22 @@ def energise(i, j, dir):
             elif dir == "up" or dir == "down":
                 return was_empty + energise(i, j - 1, "left") +energise(i, j + 1, "right")
 
+ans = 0
+for i in range(1, m - 1):
+    energised = [set() for _ in range(m) for _ in range(n)]
+    energised = [energised[i * n:(i + 1) * n] for i in range(m)]
+    ans = max(ans, energise(i, 0, "right"), energise(i, n - 1, "left"))
+for j in range(1, n - 1):
+    energised = [set() for _ in range(m) for _ in range(n)]
+    energised = [energised[i * n:(i + 1) * n] for i in range(m)]
+    ans = max(ans, energise(0, j, "down"), energise(m - 1, j, "up"))
 
-print(energise(0, 0, "right"))
+for point in ((0, 0, "right"), (0, 0, "down"),
+        (0, n - 1, "left"), (0, n - 1, "down"),
+        (m - 1, 0, "right"), (m - 1, 0, "up"),
+        (m - 1, n - 1, "left"), (m - 1, n - 1, "up")):
+    energised = [set() for _ in range(m) for _ in range(n)]
+    energised = [energised[i * n:(i + 1) * n] for i in range(m)]
+    ans = max(ans, energise(*point))
+
+print(ans)
