@@ -1,38 +1,42 @@
-lines = []
+from functools import cache
+from sys import setrecursionlimit
+
+
+graph = []
 with open("2023/input.txt", "r") as f:
     for line in f:
-        lines.append([int(x) for x in line.rstrip()])
+        line = line.rsplit()
+        graph.append([int(x) for x in line[0]])
+m, n = len(graph), len(graph[0])
 
-for line in lines:
-    print(line)
-
-m, n = len(lines), len(lines[0])
-
-def solve(i, j, dir, steps):
-    if i < 0 or i >= m or j < 0 or j >= n or visited[i][j]:
+def dfs(row, col, direction, steps):
+    if row < 0 or row >= m or col < 0 or col >= n or (row, col) in visited:
         return float('inf')
-    if i == m - 1 and j == n - 1:
-        return lines[i][j]
-    visited[i][j] = True
-    match dir:
-        case "left":
-            if steps == 3:
-                return lines[i][j] + min(solve(i - 1, j, "up", 1), solve(i + 1, j, "down", 1))
-            return lines[i][j] + min(solve(i, j - 1, "left", steps + 1), solve(i - 1, j, "up", 1), solve(i + 1, j, "down", 1))
-        case "right":
-            if steps == 3:
-                return lines[i][j] + min(solve(i - 1, j, "up", 1), solve(i + 1, j, "down", 1))
-            return lines[i][j] + min(solve(i, j + 1, "right", steps + 1), solve(i - 1, j, "up", 1), solve(i + 1, j, "down", 1))
-        case "up":
-            if steps == 3:
-                return lines[i][j] + min(solve(i, j - 1, "left", 1), solve(i, j + 1, "right", 1))
-            return lines[i][j] + min(solve(i - 1, j, "up", steps + 1), solve(i, j - 1, "left", 1), solve(i, j + 1, "right", 1))
-        case "down":
-            if steps == 3:
-                return lines[i][j] + min(solve(i, j - 1, "left", 1), solve(i, j + 1, "right", 1))
-            return lines[i][j] + min(solve(i + 1, j, "down", steps + 1), solve(i, j - 1, "left", 1), solve(i, j + 1, "right", 1))
-        
-visited = [[False] * n for _ in range(m)]
-ans = solve(0, 0, "right", 1)
-visited = [[False] * n for _ in range(m)]
-print(min(ans, solve(0, 0, "down", 1)))
+    elif row == m - 1 and col == n - 1:
+        return graph[-1][-1]
+    visited.add((row, col))
+    res = graph[row][col]
+    if direction == "left" or direction == "right":
+        turn = min(dfs(row - 1, col, "up", 2), dfs(row + 1, col, "down", 2))
+        if direction == "left":
+            straight = float('inf') if steps == 0 else dfs(row, col - 1, "left", steps - 1)
+        else:
+            straight = float('inf') if steps == 0 else dfs(row, col + 1, "right", steps - 1)
+        res += min(turn, straight)
+    else:
+        turn = min(dfs(row, col - 1, "left", 2), dfs(row, col + 1, "right", 2))
+        if direction == "up":
+            straight = float('inf') if steps == 0 else dfs(row - 1, col, "up", steps - 1)
+        else:
+            straight = float('inf') if steps == 0 else dfs(row + 1, col, "down", steps - 1)
+        res += min(turn, straight)
+    visited.remove((row, col))
+    return res
+
+setrecursionlimit(10**6)
+ans = float('inf')
+for d in ("right", "down"):
+    visited = set()
+    ans = min(ans, dfs(1, 0, d, 2), dfs(0, 1, d, 2))
+ans -= (graph[0][0] + graph[1][0])
+print(ans)
