@@ -6,16 +6,25 @@ with open("2023/input.txt", "r") as f:
 
 def find_reflection(arr):
     for i in range(1, len(arr)):
-        if arr[i] == arr[i - 1]: 
+        xor = arr[i] ^ arr[i - 1]
+        smudge = (xor & (xor - 1)) == 0 and xor != 0
+        smudge_used = False
+        if arr[i] == arr[i - 1] or smudge:
+            if smudge: 
+                smudge_used = True
             l, r = i - 2, i + 1
             valid = True
             while l >= 0 and r < len(arr):
+                xor = arr[l] ^ arr[r]
+                smudge = (xor & (xor - 1)) == 0 and xor != 0
                 if arr[l] != arr[r]:
-                    valid = False
-                    break
+                    if not smudge or smudge_used:
+                        valid = False
+                        break
+                    smudge_used = True
                 l -= 1
                 r += 1
-            if valid:
+            if valid and smudge_used:
                 return i
     return -1
 
